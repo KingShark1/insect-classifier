@@ -123,10 +123,13 @@ class MyCanny:
 		return x.filter(ImageFilter.FIND_EDGES)
 
 
-def applied_transforms(image, bbox) -> Image:
+def applied_transforms(path_to_image: str, path_to_bbox:str) -> Image:
 	"""
 	Compiles transforms and returns image in *Tensor* format
 	"""
+	image = load_image(path_to_image=path_to_image)
+	name, bbox = read_content(path_to_bbox)
+
 	transform = transforms.Compose([
 		transforms.Grayscale(3),
 		MyCanny(),
@@ -135,4 +138,4 @@ def applied_transforms(image, bbox) -> Image:
 		transforms.ToTensor(),
 	])
 
-	return transform(image)
+	return transform(image), name, bbox

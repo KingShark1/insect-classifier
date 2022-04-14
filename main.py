@@ -10,7 +10,12 @@ from models.alexnet import AlexNet
 def main():
 	input_tensor, name, bbox = AlexNet.load_image()
 	input_batch = input_tensor.unsqueeze(0)
+	tensor_to_img = transforms.ToPILImage()
 	
+	tvision_transform = tensor_to_img(input_tensor)
+	display.show_image(tvision_transform)
+	
+
 	model = AlexNet.load_model()
 
 	if torch.cuda.is_available():

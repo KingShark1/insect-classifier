@@ -11,4 +11,3 @@ def show_image_with_bbox(image, bbox, name):
 	draw.text((20,70), name)
 	image.show()
 
-	
