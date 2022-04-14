@@ -5,8 +5,8 @@ import numpy
 
 image_data_dir = 'data/detection/VOC2007/JPEGImages'
 bbox_data_dir = 'data/detection/VOC2007/Annotations'
-trainval_test_img = {'train': 'data/detection/VOC2007/ImageSets/Main/trainval.txt',
-										 'test': 'data/detection/VOC2007/ImageSets/Main/test.txt'}
+trainval_test_img = {'train': 'data/detection/VOC2007/ImageSets/Main/trainval.txt', 
+'test': 'data/detection/VOC2007/ImageSets/Main/test.txt'}
 
 def read_image_name(x):
 	with open(trainval_test_img[x]) as f:
