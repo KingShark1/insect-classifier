@@ -1,2 +1,18 @@
 # insect-classifier
 Preprocessing done
+
+
+IP102 dataset citation
+@inproceedings{Wu2019Insect,
+  title={IP102: A Large-Scale Benchmark Dataset for Insect Pest Recognition},
+  author={Xiaoping Wu and Chi Zhan and Yukun Lai and Ming-Ming Cheng and Jufeng Yang},
+  booktitle={IEEE CVPR},
+  pages={8787--8796},
+  year={2019},
+}
+
+
+Data can be found here - https://drive.google.com/drive/folders/1svFSy2Da3cVMvekBwe13mzyx38XZ9xWo  
+all the 102 insect names can be found here - https://github.com/xpwu95/IP102/blob/master/classes.txt  
+
+all the required packages to run with this project would be listed soon
