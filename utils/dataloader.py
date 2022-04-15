@@ -1,38 +1,57 @@
 import os
+from random import sample
 
-from torchvision import datasets
-import numpy
+from torch.utils.data import Dataset
+import torch
+
+from utils.preprocess import applied_transforms
 
 image_data_dir = 'data/detection/VOC2007/JPEGImages'
 bbox_data_dir = 'data/detection/VOC2007/Annotations'
-trainval_test_img = {'train': 'data/detection/VOC2007/ImageSets/Main/trainval.txt', 
-'test': 'data/detection/VOC2007/ImageSets/Main/test.txt'}
+trainval_img_dir = 'data/detection/VOC2007/ImageSets/Main/trainval.txt' 
+test_img_dir = 'data/detection/VOC2007/ImageSets/Main/test.txt'
 
-def read_image_name(x):
-	with open(trainval_test_img[x]) as f:
+def read_image_name(img_dir):
+	"""
+	Do this only one time and save the names, helps in speeding up runtime in dataloading
+	"""
+	with open(img_dir) as f:
 		filenames = f.readlines()
+	
+	for file in range(len(filenames)):
+		filenames[file] = filenames[file].strip()
 	return filenames
 
-image_dataset = {x: read_image_name(x) for x in ['train', 'test']}
-# print(image_dataset['train'][:5])
 
-def load_image_and_bbox_paths():
-	def read_bbox(image_name_list: list) -> list:
-		box_list = []
-		for box in image_name_list:
-			box_list.append(os.path.join(bbox_data_dir, f"{box.strip()}.xml"))
-		return box_list
+class InsectDataset(Dataset):
+	"""
+	Insect Dataset
+	"""
+	def __init__(self, txt_file_path: list, image_dir: str, bbox_dir: str):
+		"""
+		txt_file_list - trainval or test file contents loaded as list from ImageSets/Main/test.txt or trainval.txt
+		image_dir - Path to JPEGimages
+		bbox_dir - Path to annotations
+		"""
+		self.txt_file = read_image_name(txt_file_path)
+		self.bbox_dir = bbox_dir
+		self.image_dir = image_dir
 
-	bbox_paths = {x: read_bbox(image_dataset[x]) for x in ['train', 'test']}
-	# print("Bbox path for 0th image bbox : \t\t",bbox_paths['train'][0])
+	def __len__(self):
+		return len(self.txt_file)
 
-	def read_image_path(image_name_list: list) -> list:
-		image_path_list = []
-		for img in image_name_list:
-			image_path_list.append(os.path.join(image_data_dir, f"{img.strip()}.jpg"))
-		return image_path_list
+	def __getitem__(self, idx):
+		if torch.is_tensor(idx):
+			idx = idx.tolist()
+		
+		img_path = os.path.join(self.image_dir, self.txt_file[idx] + '.jpg')
+		bbox_path = os.path.join(self.bbox_dir, self.txt_file[idx] + '.xml')
+		
+		transform, _name, _bbox = applied_transforms(img_path, bbox_path)
 
-	image_paths = {x: read_image_path(image_dataset[x]) for x in ['train', 'test']}
-	print("Imgae path for 0 index : \t\t", image_paths['train'][0])
+		return transform
 
-	return image_paths, bbox_paths
+		
+
+
+	
