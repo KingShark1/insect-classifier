@@ -46,7 +46,7 @@ def read_content(xml_file: str):
 		list_with_single_boxes = [xmin, ymin, xmax, ymax]
 		list_with_all_boxes.append(list_with_single_boxes)
 	
-	return filename, list_with_all_boxes
+	return int(filename[2:5]), list_with_all_boxes
 
 
 

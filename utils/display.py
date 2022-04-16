@@ -1,7 +1,8 @@
+
 from PIL import Image, ImageDraw
 
 def show_image(image, bbox=None, name=None):
-	image.show()
+	image.show(title=name)
 
 def show_image_with_bbox(image, bbox, name):
 	draw = ImageDraw.Draw(image)

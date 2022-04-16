@@ -1,28 +1,31 @@
 import torch
-from PIL import Image
-from utils.dataloader import InsectDataset
-from utils.preprocess import applied_transforms
 
-image_data_dir = 'data/detection/VOC2007/JPEGImages'
-bbox_data_dir = 'data/detection/VOC2007/Annotations'
-trainval_img_dir = 'data/detection/VOC2007/ImageSets/Main/trainval.txt' 
-test_img_dir = 'data/detection/VOC2007/ImageSets/Main/test.txt'
+def load_model(device: torch.device) -> torch.nn.Module:
+	"""
+	Loads torchvision Alexnet model with pretrained weights, converts the last layer of model to fit with our insect dataset with 102 classes
+	and ports the model to given device (gpu/cpu), and returns it
 
-def load_model():
+	Parameters :
+		device - torch device
+	
+	Returns :
+		Finetuned Alexnet model in eval mode
+	"""
 	model = torch.hub.load('pytorch/vision:v0.10.0', 'alexnet', pretrained=True)
 	
 	# Chaning the last layer of AlexNet to use with our dataset
 	model.classifier[6] = torch.nn.Linear(4096, 102)
-	model.eval()
+
+	model.to(device)
+
 	return model
 
-def load_image(idx):
-	"""
-	Loads, processes and return transformed Image in PIL Image format
-	also returns name of class and bboxes of the insect, in the original image (in that order)
-	"""
+def load_criterion_optimizer_scheduler(model):
+	criterion = torch.nn.CrossEntropyLoss()
 
-	train_dataset = InsectDataset(trainval_img_dir, image_data_dir, bbox_data_dir)
+	# All parameters are being optimized
+	optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
-	tvision_transform = train_dataset[idx]
-	return tvision_transform
+	# Decay LR by factor of 0.1 every 7 epochs
+	exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+	return criterion, optimizer, exp_lr_scheduler

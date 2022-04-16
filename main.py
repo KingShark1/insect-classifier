@@ -1,39 +1,39 @@
-# import cv2
-from torchvision import transforms
 import torch
 
-from utils import display
-from utils.dataloader import read_image_name
-from utils.preprocess import applied_transforms, load_image, read_content
-
+from utils import display, train
+from utils import dataloader
+from utils.dataloader import InsectDataset, read_image_name, show_insect_image
 from models.alexnet import AlexNet
+from utils.preprocess import read_content
 
-image_data_dir = 'data/detection/VOC2007/JPEGImages'
-bbox_data_dir = 'data/detection/VOC2007/Annotations'
-trainval_img_dir = 'data/detection/VOC2007/ImageSets/Main/trainval.txt' 
-test_img_dir = 'data/detection/VOC2007/ImageSets/Main/test.txt'
 
 def main():
-	input_tensor = AlexNet.load_image(15)
-	input_batch = input_tensor.unsqueeze(0)
-	tensor_to_img = transforms.ToPILImage()
+	# Shows insect image
+	# show_insect_image(14550)
 	
-	tvision_transform = tensor_to_img(input_tensor)
-	display.show_image(tvision_transform)
+	datasets = {'train': InsectDataset(txt_file_path='data/detection/VOC2007/ImageSets/Main/trainval.txt'),
+							'val': InsectDataset(txt_file_path='data/detection/VOC2007/ImageSets/Main/test.txt')}
+	dataloaders = {'train': torch.utils.data.DataLoader(datasets['train'], batch_size=4, shuffle=True, num_workers=4),
+								'val': torch.utils.data.DataLoader(datasets['val'], batch_size=4, shuffle=True, num_workers=4)}
+	dataset_sizes = {x: len(datasets[x]) for x in ['train', 'val']}
+	class_names = datasets['train'].classes
+
 	
-
-	# model = AlexNet.load_model()
-
-	# if torch.cuda.is_available():
-	# 	input_batch = input_batch.to('cuda')
-	# 	model.to('cuda')
-
-	# with torch.no_grad():
-	# 	output = model(input_batch)
-
-	train_val_imageset = read_image_name(trainval_img_dir)
-	print(train_val_imageset[0])
+	# device available
+	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 	
-
+	model = AlexNet.load_model(device=device)
+	criterion, optimizer, exp_lr_scheduler = AlexNet.load_criterion_optimizer_scheduler(model)
+	
+	# Training the model
+	model = train.train_model(model, 
+														dataloaders=dataloaders,
+														dataset_sizes=dataset_sizes,
+														device=device,
+														criterion=criterion,
+														optimizer=optimizer,
+														scheduler=exp_lr_scheduler)
+	
+	
 if __name__=="__main__":
 	main()
