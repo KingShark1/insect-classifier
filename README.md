@@ -12,7 +12,7 @@ python main.py
 ```
 
 AlexNet's training would begin as follows  
-![Training Run](/results/Screenshot from 2022-04-16 20-48-12.png?raw=True "Training Log")
+<img src="/results/Screenshot from 2022-04-16 20-48-12.png">
 
 
 IP102 dataset citation
