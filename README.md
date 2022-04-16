@@ -1,5 +1,18 @@
 # insect-classifier
-Preprocessing done
+
+## Usage
+Install the required libraries in a virtual env using the following code snippet
+```
+pip install -r requirements.txt
+```
+
+To run the code, just run the main.py, in root directory as
+```
+python main.py
+```
+
+AlexNet's training would begin as follows  
+![Training Run](/results/Screenshot from 2022-04-16 20-48-12.png "Training Run")
 
 
 IP102 dataset citation
