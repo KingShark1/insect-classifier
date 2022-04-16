@@ -12,7 +12,7 @@ python main.py
 ```
 
 AlexNet's training would begin as follows  
-!(https://github.com/KingShark1/insect-classifier/blob/master/results/Screenshot%20from%202022-04-16%2020-48-12.png)
+![Training Run](/results/Screenshot from 2022-04-16 20-48-12.png?raw=True "Training Log")
 
 
 IP102 dataset citation
