@@ -11,7 +11,7 @@ To run the code, just run the main.py, in root directory as
 python main.py
 ```
 
-AlexNet's training would begin as follows  
+AlexNet's or GoogleNet's training would begin as follows  
 <img src="/results/Screenshot from 2022-04-16 20-48-12.png">
 
 
