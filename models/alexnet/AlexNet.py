@@ -9,7 +9,7 @@ def load_model(device: torch.device) -> torch.nn.Module:
 		device - torch device
 	
 	Returns :
-		Finetuned Alexnet model in eval mode
+		Finetuned Alexnet model ported to GPU (if available)
 	"""
 	model = torch.hub.load('pytorch/vision:v0.10.0', 'alexnet', pretrained=True)
 	
@@ -19,13 +19,3 @@ def load_model(device: torch.device) -> torch.nn.Module:
 	model.to(device)
 
 	return model
-
-def load_criterion_optimizer_scheduler(model):
-	criterion = torch.nn.CrossEntropyLoss()
-
-	# All parameters are being optimized
-	optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-
-	# Decay LR by factor of 0.1 every 7 epochs
-	exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
-	return criterion, optimizer, exp_lr_scheduler

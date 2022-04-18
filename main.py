@@ -3,9 +3,20 @@ import torch
 from utils import display, train
 from utils import dataloader
 from utils.dataloader import InsectDataset, read_image_name, show_insect_image
-from models.alexnet import AlexNet
 from utils.preprocess import read_content
 
+from models.alexnet import AlexNet
+from models.googlenet import GoogleNet
+
+def load_criterion_optimizer_scheduler(model):
+	criterion = torch.nn.CrossEntropyLoss()
+
+	# All parameters are being optimized
+	optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+
+	# Decay LR by factor of 0.1 every 7 epochs
+	exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+	return criterion, optimizer, exp_lr_scheduler
 
 def main():
 	# Shows insect image
@@ -22,18 +33,33 @@ def main():
 	# device available
 	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 	
-	model = AlexNet.load_model(device=device)
-	criterion, optimizer, exp_lr_scheduler = AlexNet.load_criterion_optimizer_scheduler(model)
+	alex_net = AlexNet.load_model(device=device)
+	google_net= GoogleNet.load_model(device=device)
 	
-	# Training the model
-	model = train.train_model(model, 
+	print("Which model do you want to train?")
+	print("Press 1 for Alexnet\tPress 2 for GoogleNet")
+	model_to_train = input()
+
+	if model_to_train == 1:
+		criterion, optimizer, exp_lr_scheduler = load_criterion_optimizer_scheduler(alex_net)
+		model = train.train_model(alex_net, 
 														dataloaders=dataloaders,
 														dataset_sizes=dataset_sizes,
 														device=device,
 														criterion=criterion,
 														optimizer=optimizer,
 														scheduler=exp_lr_scheduler)
-	
+
+	else:
+		criterion, optimizer, exp_lr_scheduler = load_criterion_optimizer_scheduler(google_net)
+		# Training the model
+		model = train.train_model(google_net, 
+															dataloaders=dataloaders,
+															dataset_sizes=dataset_sizes,
+															device=device,
+															criterion=criterion,
+															optimizer=optimizer,
+															scheduler=exp_lr_scheduler)
 	
 if __name__=="__main__":
 	main()
