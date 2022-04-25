@@ -1,6 +1,7 @@
 import copy
 import time
 import torch
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 
 def train_model(model, dataloaders, dataset_sizes, device, criterion, optimizer, scheduler, num_epochs:int=10):
@@ -54,14 +55,22 @@ def train_model(model, dataloaders, dataset_sizes, device, criterion, optimizer,
 				# Statistics
 				running_loss += loss.item() * inputs.size(0)
 				running_corrects += torch.sum(preds == labels.data)
-			
+				f1 = f1_score(labels.data.cpu(), preds.cpu(), average='micro')
+				precision = precision_score(labels.data.cpu(), preds.cpu(), average='micro')
+				recall = recall_score(labels.data.cpu(), preds.cpu(), average='micro')
+
 			if phase == 'train':
 				scheduler.step()
 			
 			epoch_loss = running_loss / dataset_sizes[phase]
 			epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
-			print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc: .4f}')
+			print(f"""{phase} Loss: {epoch_loss:.4f} \n
+							Acc: {epoch_acc: .4f} \n
+							Precision: {precision: .4f}\n
+							Recall: {recall: .4f}\n
+							F1 Score: {f1: .4f}\n
+						""")
 
 			# Deep copy the model
 			if phase == 'val' and epoch_acc > best_acc:

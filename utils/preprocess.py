@@ -8,6 +8,7 @@ from PIL import Image, ImageOps, ImageFilter
 import xml.etree.ElementTree as ET
 
 import torchvision.transforms as transforms
+import torch
 
 def load_image(path_to_image: str):
 	"""
@@ -134,8 +135,11 @@ def applied_transforms(path_to_image: str, path_to_bbox:str) -> Image:
 		transforms.Grayscale(3),
 		MyCanny(),
 		MyCrop(bbox),
-		transforms.Resize((227, 227)),
+		transforms.Resize((227, 227)),		
+		transforms.RandomHorizontalFlip(p=0.5),
+		transforms.RandomRotation(20),
+		transforms.RandomVerticalFlip(p=0.3),
 		transforms.ToTensor(),
-	])
+		])
 
 	return transform(image), name, bbox

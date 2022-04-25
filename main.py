@@ -7,6 +7,7 @@ from utils.preprocess import read_content
 
 from models.alexnet import AlexNet
 from models.googlenet import GoogleNet
+from models.basic_rnn import my_rnn
 
 def load_criterion_optimizer_scheduler(model):
 	criterion = torch.nn.CrossEntropyLoss()
@@ -29,37 +30,42 @@ def main():
 	dataset_sizes = {x: len(datasets[x]) for x in ['train', 'val']}
 	class_names = datasets['train'].classes
 
-	
+		
 	# device available
 	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 	
-	alex_net = AlexNet.load_model(device=device)
-	google_net= GoogleNet.load_model(device=device)
-	
-	print("Which model do you want to train?")
-	print("Press 1 for Alexnet\tPress 2 for GoogleNet")
-	model_to_train = input()
+	# alex_net = AlexNet.load_model(device=device)
+	# criterion, optimizer, exp_lr_scheduler = load_criterion_optimizer_scheduler(alex_net)
+	# train.train_model(alex_net, 
+	# 												dataloaders=dataloaders,
+	# 												dataset_sizes=dataset_sizes,
+	# 												device=device,
+	# 												criterion=criterion,
+	# 												optimizer=optimizer,
+	# 												scheduler=exp_lr_scheduler)
 
-	if model_to_train == 1:
-		criterion, optimizer, exp_lr_scheduler = load_criterion_optimizer_scheduler(alex_net)
-		model = train.train_model(alex_net, 
+	google_net= GoogleNet.load_model(device=device)
+	criterion, optimizer, exp_lr_scheduler = load_criterion_optimizer_scheduler(google_net)
+	# Training the model
+	model = train.train_model(google_net, 
 														dataloaders=dataloaders,
 														dataset_sizes=dataset_sizes,
 														device=device,
 														criterion=criterion,
 														optimizer=optimizer,
 														scheduler=exp_lr_scheduler)
-
-	else:
-		criterion, optimizer, exp_lr_scheduler = load_criterion_optimizer_scheduler(google_net)
-		# Training the model
-		model = train.train_model(google_net, 
-															dataloaders=dataloaders,
-															dataset_sizes=dataset_sizes,
-															device=device,
-															criterion=criterion,
-															optimizer=optimizer,
-															scheduler=exp_lr_scheduler)
 	
+	
+	# my_RNN = my_rnn.load_model(device=device)
+	# criterion, optimizer, exp_lr_scheduler = load_criterion_optimizer_scheduler(my_RNN)
+	# # Training the model
+	# train.train_model(my_RNN,
+	# 											dataloaders=dataloaders,
+	# 											dataset_sizes=dataset_sizes,
+	# 											device=device,
+	# 											criterion=criterion,
+	# 											optimizer=optimizer,
+	# 											scheduler=exp_lr_scheduler)
+
 if __name__=="__main__":
 	main()
